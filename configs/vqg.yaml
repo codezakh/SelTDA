@@ -1,0 +1,43 @@
+
+vqa_root: '/net/acadia10a/data/zkhan/coco2014/' #followed by train2014/
+vg_root: '/net/acadia10a/data/zkhan/visual-genome-sandbox'  #followed by image/
+train_files: ['vqa_train']
+ann_root: '/net/acadia10a/data/zkhan/vqav2_annotations'
+dataset_name: vqa
+truncate_train_dataset_to: null
+
+# set pretrained as a file path or an url
+pretrained: 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_caption_capfilt_large.pth'
+
+tokenizer_max_length: 40
+
+# size of vit model; base or large
+vit: 'base'
+vit_grad_ckpt: False
+vit_ckpt_layer: 0
+batch_size: 32
+init_lr: 1e-5
+
+# vit: 'large'
+# vit_grad_ckpt: True
+# vit_ckpt_layer: 5
+# batch_size: 16
+# init_lr: 2e-6
+
+image_size: 384
+
+# generation configs
+max_length: 20  
+min_length: 5
+num_beams: 3
+prompt: ''
+
+# optimizer
+weight_decay: 0.05
+min_lr: 0
+max_epoch: 5
+
+
+torch_home: /net/acadia10a/data/zkhan/torch_home
+wandb: true
+save_last_only: true

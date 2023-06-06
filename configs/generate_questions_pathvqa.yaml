@@ -1,0 +1,23 @@
+image_folder: /net/acadia4a/data/zkhan/pathvqa/images
+output_folder: /net/acadia4a/data/zkhan/pathvqa
+annotations: /net/acadia4a/data/zkhan/pathvqa/
+pretrained: /net/acadia10a/data/zkhan/mithril/blip_vqg_2/checkpoint_04.pth
+output_annotations_name: coco_generated_qa.json
+image_size: 384
+max_length: 30
+min_length: 5
+num_beams: 3
+prompt: 'Question: '
+torch_home: /net/acadia10a/data/zkhan/torch_home
+vit: base
+questions_per_image: 2
+multimodal_encoder_decoder_config: /home/mai/zkhan/BLIP/configs/med_config.json
+batch_size: 64
+truncate_to: null
+num_workers: 4
+top_p: 0.9
+vqa_dataset_origin: 'vqa'
+dry_run: false
+shuffle: false
+
+parse_rationale: false

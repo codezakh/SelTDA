@@ -1,0 +1,24 @@
+image_folder: /home/zkhan/coco/unlabeled2017
+output_folder: /home/zkhan/vqav2_annotations
+annotations: null
+pretrained: null
+output_annotations_name: null 
+image_size: 384
+max_length: 30
+min_length: 5
+num_beams: 3
+prompt: 'Question: '
+torch_home: null 
+vit: base
+questions_per_image: 1
+multimodal_encoder_decoder_config: /home/zkhan/blip/configs/med_config.json
+batch_size: 64
+truncate_to: null
+truncate_to_strict: null
+num_workers: 4
+top_p: 0.9
+vqa_dataset_origin: 'vqa'
+dry_run: false
+shuffle: false
+
+parse_rationale: false

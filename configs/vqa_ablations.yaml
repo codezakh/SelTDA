@@ -1,0 +1,39 @@
+vqa_root: '/net/acadia10a/data/zkhan/coco2014/' #followed by train2014/
+vg_root: '/net/acadia10a/data/zkhan/visual-genome-sandbox'  #followed by image/
+train_files: ['vqa_train']
+ann_root: '/net/acadia10a/data/zkhan/vqav2_annotations'
+dataset_name: vqa
+truncate_train_dataset_to: null
+
+# We don't stop you from setting all of these to True...
+# but you probably shouldn't. Also, these aren't meaningful
+# for VQA, since there are no rationales in VQA. Yet :)
+append_rationale_to_answer: false
+append_rationale_to_question: false
+use_rationale_as_answer: false
+
+# set pretrained as a file path or an url
+# pretrained: 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_vqa_capfilt_large.pth'
+pretrained: 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_capfilt_large.pth'
+
+# size of vit model; base or large
+vit: 'base'
+batch_size_train: 32
+batch_size_test: 32 
+vit_grad_ckpt: False
+vit_ckpt_layer: 0
+init_lr: 2e-5
+
+image_size: 480
+
+k_test: 128
+inference: 'rank'
+
+# optimizer
+weight_decay: 0.05
+min_lr: 0
+max_epoch: 10
+
+torch_home: /net/acadia10a/data/zkhan/torch_home
+wandb: true
+save_last_only: true
