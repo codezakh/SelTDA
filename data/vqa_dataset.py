@@ -10,13 +10,19 @@ from data.utils import pre_question
 
 from torchvision.datasets.utils import download_url
 
-STANDARD_DATASETS = ('vqa', 'aokvqa', 'okvqa')
+STANDARD_DATASETS = ("vqa", "aokvqa", "okvqa")
 
 
 class GenericVqaDataset(Dataset):
     def __init__(
-        self, transform, ann_root: str, vqa_root: str, ann_files: List[str], split: str="train", truncate_to: Optional[int] = None,
-        answer_list: str = 'answer_list'
+        self,
+        transform,
+        ann_root: str,
+        vqa_root: str,
+        ann_files: List[str],
+        split: str = "train",
+        truncate_to: Optional[int] = None,
+        answer_list: str = "answer_list",
     ):
         self.split = split
 
@@ -32,11 +38,11 @@ class GenericVqaDataset(Dataset):
             )
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
 
-        if split in ('test', 'val'):
+        if split in ("test", "val"):
             self.answer_list = json.load(
-                open(os.path.join(ann_root, f'{answer_list}.json'), "r")
+                open(os.path.join(ann_root, f"{answer_list}.json"), "r")
             )
 
     def __len__(self):
@@ -64,19 +70,27 @@ class GenericVqaDataset(Dataset):
                     answer_weight[answer] += 1 / len(ann["answer"])
                 else:
                     answer_weight[answer] = 1 / len(ann["answer"])
-                
+
             answers = list(answer_weight.keys())
             weights = list(answer_weight.values())
 
             return image, question, answers, weights
 
+
 # TODO: Create a generic VQA dataset class and clean up the code.
 class vqa_dataset(Dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, vg_root, train_files=[], split="train", truncate_to: Optional[int] = None,
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        vg_root,
+        train_files=[],
+        split="train",
+        truncate_to: Optional[int] = None,
         append_rationale_to_answer: bool = False,
         append_rationale_to_question: bool = False,
-        use_rationale_as_answer: Union[bool,str] = False,
+        use_rationale_as_answer: Union[bool, str] = False,
     ):
         self.split = split
 
@@ -118,7 +132,7 @@ class vqa_dataset(Dataset):
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
 
     def __len__(self):
         return len(self.annotation)
@@ -144,7 +158,7 @@ class vqa_dataset(Dataset):
             # during test / validation time because we explore
             # models that use generated rationales during inference.
             if self.append_rationale_to_question:
-                rationale = ' '.join(ann["rationales"])
+                rationale = " ".join(ann["rationales"])
                 question = f"{question}. Rationale: {rationale}"
             return image, question, question_id
 
@@ -158,9 +172,9 @@ class vqa_dataset(Dataset):
             # which have multiple answers.
             if ann["dataset"] == "vqa" or isinstance(ann["answer"], list):
                 # The two blocks below should be identically except one uses
-                # the rationales as the answer. This is so we can have a 
+                # the rationales as the answer. This is so we can have a
                 # model that generates rationales given a question, rather
-                # than an answer. 
+                # than an answer.
                 if not self.use_rationale_as_answer:
                     answer_weight = {}
                     for answer in ann["answer"]:
@@ -168,20 +182,22 @@ class vqa_dataset(Dataset):
                             answer_weight[answer] += 1 / len(ann["answer"])
                         else:
                             answer_weight[answer] = 1 / len(ann["answer"])
-                elif self.use_rationale_as_answer == 'separated':
+                elif self.use_rationale_as_answer == "separated":
                     answer_weight = {}
                     for answer in ann["rationales"]:
                         if answer in answer_weight.keys():
                             answer_weight[answer] += 1 / len(ann["rationales"])
                         else:
                             answer_weight[answer] = 1 / len(ann["rationales"])
-                elif self.use_rationale_as_answer == 'concatenated':
+                elif self.use_rationale_as_answer == "concatenated":
                     answer_weight = {}
-                    answer = ' '.join(ann["rationales"])
+                    answer = " ".join(ann["rationales"])
                     answer_weight[answer] = 1
                 else:
-                    raise ValueError(f"Invalid value for use_rationale_as_answer: {self.use_rationale_as_answer}")
-                    
+                    raise ValueError(
+                        f"Invalid value for use_rationale_as_answer: {self.use_rationale_as_answer}"
+                    )
+
                 answers = list(answer_weight.keys())
                 weights = list(answer_weight.values())
 
@@ -190,10 +206,10 @@ class vqa_dataset(Dataset):
                 weights = [0.2]
 
             if self.append_rationale_to_answer:
-                rationale = ' '.join(ann["rationales"])
+                rationale = " ".join(ann["rationales"])
                 answers = [f"{answer}. Rationale: {rationale}" for answer in answers]
             if self.append_rationale_to_question:
-                rationale = ' '.join(ann["rationales"])
+                rationale = " ".join(ann["rationales"])
                 question = f"{question}. Rationale: {rationale}"
 
             return image, question, answers, weights
@@ -201,11 +217,17 @@ class vqa_dataset(Dataset):
 
 class AokVqaDataset(vqa_dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, vg_root, train_files=[], split="train",
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        vg_root,
+        train_files=[],
+        split="train",
         truncate_to: Optional[int] = None,
         append_rationale_to_answer: bool = False,
         append_rationale_to_question: bool = False,
-        use_rationale_as_answer: Union[bool,str] = False,
+        use_rationale_as_answer: Union[bool, str] = False,
     ):
         """
         Args:
@@ -219,8 +241,8 @@ class AokVqaDataset(vqa_dataset):
             append_rationale_to_answer (bool, optional): _description_. Defaults to False.
             append_rationale_to_question (bool, optional): _description_. Defaults to False.
             use_rationale_as_answer (Union[bool,str], optional): Replaces the answers in the datasets
-                with the rationales. Set it to false if you don't want to do this. Otherwise, set it 
-                to 'concatenated' if you want to have a single long rationale for each question, and 
+                with the rationales. Set it to false if you don't want to do this. Otherwise, set it
+                to 'concatenated' if you want to have a single long rationale for each question, and
                 'separated' if you want to have multiple small rationales for each question. Defaults to False.
         """
         self.split = split
@@ -240,27 +262,28 @@ class AokVqaDataset(vqa_dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
         elif split == "val":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "val.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "val.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
         else:
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "test.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "test.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
 
 
 class OkVqaDataset(vqa_dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, train_files=[], split="train",
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        train_files=[],
+        split="train",
         truncate_to: Optional[int] = None,
     ):
         self.split = split
@@ -276,8 +299,8 @@ class OkVqaDataset(vqa_dataset):
         # a mixin and implement a getter for these that returns fault
         # by default.
         self.append_rationale_to_answer = False
-        self.append_rationale_to_question = False 
-        self.use_rationale_as_answer = False 
+        self.append_rationale_to_question = False
+        self.use_rationale_as_answer = False
 
         if split == "train":
             self.annotation = []
@@ -286,9 +309,7 @@ class OkVqaDataset(vqa_dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
         elif split == "val":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "val.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "val.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
@@ -296,11 +317,17 @@ class OkVqaDataset(vqa_dataset):
             raise ValueError("There is no test set for OKVQA")
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
+
 
 class ArtVQADataset(vqa_dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, train_files=[], split="train",
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        train_files=[],
+        split="train",
         truncate_to: Optional[int] = None,
     ):
         self.split = split
@@ -316,8 +343,8 @@ class ArtVQADataset(vqa_dataset):
         # a mixin and implement a getter for these that returns fault
         # by default.
         self.append_rationale_to_answer = False
-        self.append_rationale_to_question = False 
-        self.use_rationale_as_answer = False 
+        self.append_rationale_to_question = False
+        self.use_rationale_as_answer = False
 
         if split == "train":
             self.annotation = []
@@ -326,9 +353,7 @@ class ArtVQADataset(vqa_dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
         elif split == "test":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "test.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "test.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
@@ -341,11 +366,17 @@ class ArtVQADataset(vqa_dataset):
             raise ValueError("Not using the validation set for ArtVQA")
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
+
 
 class VQARephrasingsDataset(vqa_dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, train_files=[], split="train",
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        train_files=[],
+        split="train",
         truncate_to: Optional[int] = None,
     ):
         self.split = split
@@ -361,8 +392,8 @@ class VQARephrasingsDataset(vqa_dataset):
         # a mixin and implement a getter for these that returns fault
         # by default.
         self.append_rationale_to_answer = False
-        self.append_rationale_to_question = False 
-        self.use_rationale_as_answer = False 
+        self.append_rationale_to_question = False
+        self.use_rationale_as_answer = False
 
         if split == "train":
             self.annotation = []
@@ -371,9 +402,7 @@ class VQARephrasingsDataset(vqa_dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
         elif split == "val":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "val.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "val.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
@@ -381,11 +410,17 @@ class VQARephrasingsDataset(vqa_dataset):
             raise ValueError("There is no test set for VQA Rephrasings")
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
+
 
 class PathVqaDataset(vqa_dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, train_files=[], split="train",
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        train_files=[],
+        split="train",
         truncate_to: Optional[int] = None,
     ):
         self.split = split
@@ -401,8 +436,8 @@ class PathVqaDataset(vqa_dataset):
         # a mixin and implement a getter for these that returns fault
         # by default.
         self.append_rationale_to_answer = False
-        self.append_rationale_to_question = False 
-        self.use_rationale_as_answer = False 
+        self.append_rationale_to_question = False
+        self.use_rationale_as_answer = False
 
         if split == "train":
             self.annotation = []
@@ -411,9 +446,7 @@ class PathVqaDataset(vqa_dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
         elif split == "test":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "test.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "test.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
@@ -426,11 +459,17 @@ class PathVqaDataset(vqa_dataset):
             raise ValueError("Not using the validation set for PathVQA")
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
 
-class RsvqaDataset(vqa_dataset): 
+
+class RsvqaDataset(vqa_dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, train_files=[], split="train",
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        train_files=[],
+        split="train",
         truncate_to: Optional[int] = None,
     ):
         self.split = split
@@ -446,8 +485,8 @@ class RsvqaDataset(vqa_dataset):
         # a mixin and implement a getter for these that returns fault
         # by default.
         self.append_rationale_to_answer = False
-        self.append_rationale_to_question = False 
-        self.use_rationale_as_answer = False 
+        self.append_rationale_to_question = False
+        self.use_rationale_as_answer = False
 
         if split == "train":
             self.annotation = []
@@ -456,9 +495,7 @@ class RsvqaDataset(vqa_dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
         elif split == "test":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "test.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "test.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
@@ -471,7 +508,8 @@ class RsvqaDataset(vqa_dataset):
             raise ValueError("Not using the validation set for RSVQA")
 
         if self.truncate_to:
-            self.annotation = self.annotation[:self.truncate_to]
+            self.annotation = self.annotation[: self.truncate_to]
+
 
 def vqa_collate_fn(batch):
     image_list, question_list, answer_list, weight_list, n = [], [], [], [], []

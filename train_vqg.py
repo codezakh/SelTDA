@@ -26,9 +26,10 @@ from data.utils import save_result, coco_caption_eval
 import cli
 
 
-
 class Trainer:
-    def __init__(self, model, data_loader, optimizer, device, wandb_logger=None, print_freq=50) -> None:
+    def __init__(
+        self, model, data_loader, optimizer, device, wandb_logger=None, print_freq=50
+    ) -> None:
         self.model = model
         self.data_loader = data_loader
         self.optimizer = optimizer
@@ -40,7 +41,9 @@ class Trainer:
         self.model.train()
 
         self.metric_logger = utils.MetricLogger(delimiter="  ")
-        self.metric_logger.add_meter("lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}"))
+        self.metric_logger.add_meter(
+            "lr", utils.SmoothedValue(window_size=1, fmt="{value:.6f}")
+        )
         self.metric_logger.add_meter(
             "loss", utils.SmoothedValue(window_size=1, fmt="{value:.4f}")
         )
@@ -149,12 +152,14 @@ def main(args, config):
 
     #### Model ####
     print("Creating model")
-    model = decoder_from_config(config) 
+    model = decoder_from_config(config)
 
     if utils.is_main_process() and config.wandb:
         print("Is main process, creating W&B logger.")
         wandb_logger = wandb.init(
-            project="mithril-alice-valley", entity="zakh", config=OmegaConf.to_container(config)
+            project="mithril-alice-valley",
+            entity="zakh",
+            config=OmegaConf.to_container(config),
         )
     else:
         wandb_logger = None
@@ -207,7 +212,7 @@ def main(args, config):
             if args.evaluate:
                 pass
             else:
-                
+
                 if config.save_last_only:
                     should_save = epoch == epochs[-1]
                 else:
@@ -221,9 +226,9 @@ def main(args, config):
                         "epoch": epoch,
                     }
                     torch.save(
-                        save_obj, os.path.join(args.output_dir, "checkpoint_%02d.pth" % epoch)
+                        save_obj,
+                        os.path.join(args.output_dir, "checkpoint_%02d.pth" % epoch),
                     )
-
 
                 log_stats = {
                     **{f"train_{k}": v for k, v in train_stats.items()},
@@ -244,6 +249,6 @@ def main(args, config):
 
 
 if __name__ == "__main__":
-    args, config = cli.parse_args(default_config_path='configs/vqg.yaml')
+    args, config = cli.parse_args(default_config_path="configs/vqg.yaml")
     cli.setup(args, config)
     main(args, config)

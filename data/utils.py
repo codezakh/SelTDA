@@ -80,8 +80,8 @@ def save_result(result, result_dir, filename, remove_duplicate=""):
     return final_result_file
 
 
-#from pycocotools.coco import COCO
-#from pycocoevalcap.eval import COCOEvalCap
+# from pycocotools.coco import COCO
+# from pycocoevalcap.eval import COCOEvalCap
 from torchvision.datasets.utils import download_url
 
 

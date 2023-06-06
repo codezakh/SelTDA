@@ -8,7 +8,8 @@
 import argparse
 from inspect import Attribute
 import os
-#import ruamel.yaml as yaml
+
+# import ruamel.yaml as yaml
 import numpy as np
 import random
 import time
@@ -110,7 +111,7 @@ def evaluation(model, data_loader, device, config):
             answers = model(image, question, train=False, inference="generate")
 
             for answer, ques_id in zip(answers, question_id):
-                # ques_id can be either a one-element Tensor[int]  or a 
+                # ques_id can be either a one-element Tensor[int]  or a
                 # string. We convert it to an int (not sure why), but
                 # this means we have to handle each case separately.
                 try:
@@ -129,9 +130,11 @@ def evaluation(model, data_loader, device, config):
                 k_test=config["k_test"],
                 return_scores=True,
             )
-            for ques_id, answer_id, answer_score in zip(question_id, answer_ids, answer_scores):
+            for ques_id, answer_id, answer_score in zip(
+                question_id, answer_ids, answer_scores
+            ):
                 # The question id is a string in some datasets (VQAv2)
-                # and an integer in other datasets (A-OKVQA). When it's a 
+                # and an integer in other datasets (A-OKVQA). When it's a
                 # an integer, it gets type casted to a tensor, which we
                 # can't serialize to JSON without converting it back to an int.
                 try:
@@ -165,7 +168,9 @@ def main(args, config):
     if utils.is_main_process() and config.wandb:
         print("Is main process, creating W&B logger.")
         wandb_logger = wandb.init(
-            project="mithril-alice-valley", entity="zakh", config=OmegaConf.to_container(config)
+            project="mithril-alice-valley",
+            entity="zakh",
+            config=OmegaConf.to_container(config),
         )
     else:
         wandb_logger = None
@@ -199,8 +204,6 @@ def main(args, config):
         vit_ckpt_layer=config["vit_ckpt_layer"],
     )
 
-
-
     model = model.to(device)
 
     model_without_ddp = model
@@ -233,7 +236,9 @@ def main(args, config):
                 config["min_lr"],
             )
 
-            train_stats = train(model, train_loader, optimizer, epoch, device, wandb_logger=wandb_logger)
+            train_stats = train(
+                model, train_loader, optimizer, epoch, device, wandb_logger=wandb_logger
+            )
 
         else:
             break
@@ -245,7 +250,6 @@ def main(args, config):
             }
             with open(os.path.join(args.output_dir, "log.txt"), "a") as f:
                 f.write(json.dumps(log_stats) + "\n")
-
 
             if config.save_last_only:
                 should_save = epoch == epochs[-1]
@@ -259,9 +263,10 @@ def main(args, config):
                     "config": config,
                     "epoch": epoch,
                 }
-                
+
                 torch.save(
-                    save_obj, os.path.join(args.output_dir, "checkpoint_%02d.pth" % epoch)
+                    save_obj,
+                    os.path.join(args.output_dir, "checkpoint_%02d.pth" % epoch),
                 )
 
         dist.barrier()
@@ -275,6 +280,6 @@ def main(args, config):
 
 
 if __name__ == "__main__":
-    args, config = cli.parse_args(default_config_path='./configs/vqa.yaml')
+    args, config = cli.parse_args(default_config_path="./configs/vqa.yaml")
     cli.setup(args, config)
     main(args, config)

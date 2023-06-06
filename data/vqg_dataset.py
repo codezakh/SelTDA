@@ -12,13 +12,24 @@ from torchvision.datasets.utils import download_url
 
 
 GENERATION_TEMPLATE = """Question: {question} Answer: {answer}"""
-GENERATION_TEMPLATE_WITH_RATIONALE = """Question: {question} Answer: {answer}. Rationale: {rationale}"""
-GENERATION_TEMPLATE_WITH_RATIONALE_FIRST = """Rationale: {rationale}. Question: {question}. Answer: {answer}"""
+GENERATION_TEMPLATE_WITH_RATIONALE = (
+    """Question: {question} Answer: {answer}. Rationale: {rationale}"""
+)
+GENERATION_TEMPLATE_WITH_RATIONALE_FIRST = (
+    """Rationale: {rationale}. Question: {question}. Answer: {answer}"""
+)
 
 
 class VqgDataset(Dataset):
     def __init__(
-        self, transform, ann_root, vqa_root, vg_root, train_files=None, split="train", truncate_to=None
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        vg_root,
+        train_files=None,
+        split="train",
+        truncate_to=None,
     ):
         self.split = split
 
@@ -101,13 +112,25 @@ class VqgDataset(Dataset):
             elif ann["dataset"] == "vg":
                 answers = [ann["answer"]]
                 weights = [0.2]
-            
-            target = self.template.format(question=question, answer=','.join(answers))
 
-            return image, target, ann['question_id']
+            target = self.template.format(question=question, answer=",".join(answers))
+
+            return image, target, ann["question_id"]
+
 
 class AokVqgDataset(Dataset):
-    def __init__(self, transform, ann_root, vqa_root, vg_root, train_files=None, split="train", truncate_to=None, use_rationale=False, generate_rationale_first=False):
+    def __init__(
+        self,
+        transform,
+        ann_root,
+        vqa_root,
+        vg_root,
+        train_files=None,
+        split="train",
+        truncate_to=None,
+        use_rationale=False,
+        generate_rationale_first=False,
+    ):
         self.split = split
         self.transform = transform
         self.vqa_root = vqa_root
@@ -123,18 +146,14 @@ class AokVqgDataset(Dataset):
                     open(os.path.join(ann_root, "%s.json" % f), "r")
                 )
             if self.truncate_to:
-                self.annotation = self.annotation[:self.truncate_to]
+                self.annotation = self.annotation[: self.truncate_to]
         elif split == "val":
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "val.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "val.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
         else:
-            self.annotation = json.load(
-                open(os.path.join(ann_root, "test.json"), "r")
-            )
+            self.annotation = json.load(open(os.path.join(ann_root, "test.json"), "r"))
             self.answer_list = json.load(
                 open(os.path.join(ann_root, "answer_list.json"), "r")
             )
@@ -162,16 +181,25 @@ class AokVqgDataset(Dataset):
 
             answers = ann["answer"]
 
-
             if self.use_rationale:
                 if self.generate_rationale_first:
-                    target = GENERATION_TEMPLATE_WITH_RATIONALE_FIRST.format(question=question, answer=','.join(answers), rationale=' '.join(ann['rationales']))
+                    target = GENERATION_TEMPLATE_WITH_RATIONALE_FIRST.format(
+                        question=question,
+                        answer=",".join(answers),
+                        rationale=" ".join(ann["rationales"]),
+                    )
                 else:
-                    target = GENERATION_TEMPLATE_WITH_RATIONALE.format(question=question, answer=','.join(answers), rationale=' '.join(ann['rationales']))
+                    target = GENERATION_TEMPLATE_WITH_RATIONALE.format(
+                        question=question,
+                        answer=",".join(answers),
+                        rationale=" ".join(ann["rationales"]),
+                    )
             else:
-                target = GENERATION_TEMPLATE.format(question=question, answer=','.join(answers))
+                target = GENERATION_TEMPLATE.format(
+                    question=question, answer=",".join(answers)
+                )
 
-            return image, target, ann['question_id']
+            return image, target, ann["question_id"]
 
 
 def vqa_collate_fn(batch):

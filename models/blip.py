@@ -148,14 +148,14 @@ class BLIP_Decoder(nn.Module):
         loss_lm = decoder_output.loss
 
         return loss_lm
-    
+
     def tokenize(self, input):
         return self.tokenizer(
             input,
-            padding='longest',
+            padding="longest",
             truncation=True,
             max_length=self.tokenizer_max_length,
-            return_tensors='pt'
+            return_tensors="pt",
         )
 
     def generate(
@@ -229,13 +229,14 @@ def blip_decoder(pretrained="", **kwargs):
         assert len(msg.missing_keys) == 0
     return model
 
+
 # We have a from config function so each script will call
 # the same function and we can test that function and make
-# sure all behavior (e.g. passing specific settings from 
-# config into the model) is respected by that function. 
+# sure all behavior (e.g. passing specific settings from
+# config into the model) is respected by that function.
 # The previous approach had each script initialize the model
 # by passing args into the model. This means that if we added
-# a universal argument like `tokenizer_max_length`, it was 
+# a universal argument like `tokenizer_max_length`, it was
 # easily possible for some scripts to not have that argument
 # passed into the model. It being an optional argument, that
 # would be an insidious bug to catch.
@@ -251,8 +252,9 @@ def decoder_from_config(config):
     if config.pretrained:
         model, msg = load_checkpoint(model, config.pretrained)
         assert len(msg.missing_keys) == 0
-    
+
     return model
+
 
 def blip_feature_extractor(pretrained="", **kwargs):
     model = BLIP_Base(**kwargs)

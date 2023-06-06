@@ -11,7 +11,16 @@ from data.coco_karpathy_dataset import (
 )
 from data.nocaps_dataset import nocaps_eval
 from data.flickr30k_dataset import flickr30k_train, flickr30k_retrieval_eval
-from data.vqa_dataset import vqa_dataset, AokVqaDataset, OkVqaDataset, ArtVQADataset, VQARephrasingsDataset, PathVqaDataset, RsvqaDataset, GenericVqaDataset
+from data.vqa_dataset import (
+    vqa_dataset,
+    AokVqaDataset,
+    OkVqaDataset,
+    ArtVQADataset,
+    VQARephrasingsDataset,
+    PathVqaDataset,
+    RsvqaDataset,
+    GenericVqaDataset,
+)
 from data.nlvr_dataset import nlvr_dataset
 from data.pretrain_dataset import pretrain_dataset
 from data.vqg_dataset import VqgDataset, AokVqgDataset
@@ -193,7 +202,7 @@ def create_dataset(dataset, config, min_scale=0.5):
         )
         return train_dataset, val_dataset, test_dataset
 
-    elif dataset == 'aokvqa':
+    elif dataset == "aokvqa":
         train_dataset = AokVqaDataset(
             transform_train,
             config["ann_root"],
@@ -225,7 +234,7 @@ def create_dataset(dataset, config, min_scale=0.5):
                 split="test",
             )
         return train_dataset, test_dataset
-    elif dataset == 'okvqa':
+    elif dataset == "okvqa":
         train_dataset = OkVqaDataset(
             transform=transform_train,
             ann_root=config["ann_root"],
@@ -243,7 +252,7 @@ def create_dataset(dataset, config, min_scale=0.5):
             split="val",
         )
         return train_dataset, test_dataset
-    elif dataset == 'artvqa':
+    elif dataset == "artvqa":
         train_dataset = ArtVQADataset(
             transform_train,
             config["ann_root"],
@@ -259,7 +268,7 @@ def create_dataset(dataset, config, min_scale=0.5):
             split="test",
         )
         return train_dataset, test_dataset
-    elif dataset == 'pathvqa':
+    elif dataset == "pathvqa":
         train_dataset = PathVqaDataset(
             transform_train,
             config["ann_root"],
@@ -275,7 +284,7 @@ def create_dataset(dataset, config, min_scale=0.5):
             split="test",
         )
         return train_dataset, test_dataset
-    elif dataset == 'vqa_rephrasings':
+    elif dataset == "vqa_rephrasings":
         train_dataset = VQARephrasingsDataset(
             transform=transform_train,
             ann_root=config["ann_root"],
@@ -293,7 +302,7 @@ def create_dataset(dataset, config, min_scale=0.5):
             split="val",
         )
         return train_dataset, test_dataset
-    elif dataset == 'rsvqa':
+    elif dataset == "rsvqa":
         train_dataset = RsvqaDataset(
             transform=transform_train,
             ann_root=config["ann_root"],
@@ -310,7 +319,7 @@ def create_dataset(dataset, config, min_scale=0.5):
             split="test",
         )
         return train_dataset, test_dataset
-    elif dataset == 'generic_vqa':
+    elif dataset == "generic_vqa":
         train_dataset = GenericVqaDataset(
             transform=transform_train,
             ann_root=config["ann_root"],
