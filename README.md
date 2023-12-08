@@ -1,8 +1,6 @@
 [![Conference](https://img.shields.io/badge/CVPR-2023-blue)](https://openaccess.thecvf.com/content/CVPR2023/html/Khan_Q_How_To_Specialize_Large_Vision-Language_Models_to_Data-Scarce_VQA_CVPR_2023_paper.html)
 [![Paper](http://img.shields.io/badge/paper-arxiv.2306.03932-B31B1B.svg)](https://arxiv.org/abs/2306.03932)
 
-**Note:** Code release is in progress. All code has been uploaded, but I'm still working on the documentation.
-
 # SelTDA
 This repository will hold the official code of SelTDA, the self-training framework introduced in our CVPR 2023 paper "Q: How to Specialize Large Vision-Language Models to Data-Scarce VQA Tasks? A: Self-Train on Unlabeled Images!".
 
